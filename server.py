@@ -1,17 +1,15 @@
-from flask import Flask, jsonify
+from flask import Flask
 import os
 from flask_pymongo import PyMongo
 from dotenv import load_dotenv
-
-from routes import initiate_routes
+from routes.landing_routes import landing_routes
 
 
 load_dotenv()
 
 
 def create_app():
-    template_dir = os.path.join(os.path.dirname(__name__), "templates")
-    app = Flask(__name__, template_folder=template_dir)
+    app = Flask(__name__)
     app.secret_key = os.getenv("SECRET_KYE")
     return app
 
@@ -24,6 +22,9 @@ def db_connet(app):
 
 def run_app(app):
     app.run(debug = True)
+
+def initiate_routes(app, mongo):
+    landing_routes(app, mongo)
 
 
 if __name__ == "__main__":

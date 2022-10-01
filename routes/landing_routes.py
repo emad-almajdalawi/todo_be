@@ -3,11 +3,10 @@ from flask import (
     jsonify,
     request,
     redirect,
-    url_for,
 )
 from servaces.mogo_crud import get_all, post_task
 
-def initiate_routes(app, mongo):
+def landing_routes(app, mongo):
     @app.route("/", methods=["GET"])
     def main():
         # tasks = get_all(mongo, 'tasks')
@@ -16,6 +15,6 @@ def initiate_routes(app, mongo):
 
     @app.route("/", methods=['POST'])
     def main_post():
-        # post_task()
+        # post_task(mongo, 'tasks')
         mongo.save_file()
         return redirect()
