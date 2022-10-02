@@ -1,3 +1,5 @@
+from bson.objectid import ObjectId
+
 
 def get_all(mongo, collection):
     '''
@@ -23,8 +25,9 @@ def get_one(mongo, collection, id):
 
     if type(id) != str:
         str(id)
+    print('test: ', mongo.db[collection].find({'_id': ObjectId(id)}))
 
-    return mongo.db[collection].find({'_id': {'$oid': id}})
+    return mongo.db[collection].find({'_id': ObjectId(id)})
 
 
 def post_task(mongo, collection, new_doc):
@@ -38,30 +41,6 @@ def post_task(mongo, collection, new_doc):
         str(collection)
     mongo.db[collection].insert_one(new_doc)
     
-    return 201
-
-
-def update_task(mongo, collection, new_doc, id):
-    '''
-    Updates the value of a document in a collection in the datbase
-    mongo (Object): pyMongo object of the database
-    collection (String): collection name
-    new_doc (Dict): The new document
-    id (string): The id of the document
-    '''
-    if type(collection) != str:
-        str(collection)
-
-    if type(id) != str:
-        str(id)
-
-    mongo.db[collection].update_one(
-        {'_id': {'$oid': id}}, 
-        {'$set': {'title': f'{new_doc}.title', 'done': f'{new_doc}.done'}}
-        )
-
-    return 201
-
 
 def delete_task(mongo, collection, id):
     '''
@@ -76,6 +55,24 @@ def delete_task(mongo, collection, id):
     if type(id) != str:
         str(id)
 
-    mongo.db[collection].delte_one({'_id': {'$oid': id}})
+    mongo.db[collection].delete_one({'_id': ObjectId(id)})
 
-    return 201
+
+def update_task(mongo, collection, title, done, id): # insted title and done you can pass new_doc
+    '''
+    Updates the value of a document in a collection in the datbase
+    mongo (Object): pyMongo object of the database
+    collection (String): collection name
+    new_doc (Dict): The new document
+    id (string): The id of the document
+    '''
+    if type(collection) != str:
+        str(collection)
+
+    if type(id) != str:
+        str(id)
+    
+    mongo.db[collection].update_one(
+        {'_id': ObjectId(id)}, 
+        {'$set': {'title': title, 'done': done}}
+        )
