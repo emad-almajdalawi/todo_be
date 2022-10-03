@@ -1,13 +1,14 @@
-from flask import Flask
 import os
+from flask import Flask
 from flask_pymongo import PyMongo
 from dotenv import load_dotenv
-from routes.todo_routes import load_routes
+from routes.todo_routes import todo_routes
 
 
 def create_app():
     """
     Creates the flask app
+
     Return:
         - app: the flask application's object
     """
@@ -19,8 +20,10 @@ def create_app():
 def db_connet(app):
     """
     Connects to MogoDB
+
     Args:
         - app: the falsk application's object
+
     Return:
         - mongo: the thedabase's object
     """
@@ -29,27 +32,20 @@ def db_connet(app):
     return mongo
 
 
-def run_app(app):
-    """
-    Runs the flask application
-    Args:
-        - app: the flask application's object
-    """
-    app.run(debug = True)
-
-
-def initiate_routes(app):
+def load_routes(app):
     """
     Calls all routes functions
+
     Args:
         - app: the flask application's object
     """
-    load_routes(app)
+    todo_routes(app)
 
 
-def initiate_flask(app):
+def run_flask(app):
     """
-    Calls all needed functions to run the flask application
+    Runs the flask application
+
     Args:
         - app: the flask application's object
     """
@@ -58,10 +54,10 @@ def initiate_flask(app):
     mongo = db_connet(app)
     app.mongo = mongo
 
-    initiate_routes(app)
-    run_app(app)
+    load_routes(app)
+    app.run(debug = True)
 
 
 if __name__ == "__main__":
-    initiate_flask(create_app())
+    run_flask(create_app())
     
