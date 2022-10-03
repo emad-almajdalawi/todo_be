@@ -2,6 +2,7 @@ import os
 from flask import Flask
 from flask_pymongo import PyMongo
 from dotenv import load_dotenv
+from flask_cors import CORS
 from routes.todo_routes import todo_routes
 
 
@@ -14,6 +15,7 @@ def create_app():
     """
     app = Flask(__name__)
     app.secret_key = os.getenv("SECRET_KYE")
+    CORS(app)
     return app
 
 
