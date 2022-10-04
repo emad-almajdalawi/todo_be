@@ -1,8 +1,17 @@
-from email import message
 import json
 from flask import jsonify, request
 from bson import json_util
 from services.mogo_crud import get_data, post_task, delete_task, update_task
+
+
+def serialize(data):
+    ser_data = {}
+    kyes = [ 'title', 'done']
+    ser_data['id'] = str(data["_id"])
+    for feild_key in kyes:
+        ser_data[feild_key] = data[feild_key]
+
+    return ser_data
 
 
 def todo_routes(app):
@@ -39,6 +48,7 @@ def todo_routes(app):
         else:
             return jsonify(message='Method not allowed!', status=500), 500
 
+
     @app.route('/task/<id>.json', methods = ['GET'])
     def get_task_details(id=None):
         """
@@ -53,6 +63,7 @@ def todo_routes(app):
         if request.method == 'GET':
             if (id):
                 task =  get_data(app.mongo, 'tasks', id)
+
                 return json.loads(json_util.dumps(task))
 
         else:
@@ -64,18 +75,11 @@ def todo_routes(app):
         """
         Add new task
         """
-        title = request.form.get('title') #or requeist.args.get , or requist.json.get_json
-        done_text = request.form.get('done')
-        if type(done_text) == str:
-            if done_text in ['True', 'true', 1]:
-                done = True
-            elif done_text in ['false', 'False', 0]:
-                done = False
-            
-        new_doc = {'title': title, 'done': done}
+        new_doc = request.get_json() #or requeist.args.get , or requist.form.get
         post_task(app.mongo, 'tasks', new_doc)
+        serialized = serialize(new_doc)
 
-        return jsonify(message='Success', status='201'), 201
+        return jsonify(message='Success', status='201', data=serialized), 201,
 
 
 
@@ -89,7 +93,7 @@ def todo_routes(app):
         """
         delete_task(app.mongo, 'tasks', id)
 
-        return jsonify(message='Success', status='202'), 202
+        return jsonify(message='Success', status='202', id=id), 202
 
 
 
@@ -101,16 +105,11 @@ def todo_routes(app):
         Args:
             - id: the id of the task to show its details
         """
-        title = request.form.get('title') #or requeist.args.get , or requist.json.get_json
-        done_text = request.form.get('done')
-        if type(done_text) == str:
-                if done_text in ['True', 'true', 1]:
-                    done = True
-                elif done_text in ['false', 'False', 0]:
-                    done = False
-                
-        # new_doc = {'title': title, 'done': done}        
+        req = request.get_json() #or requeist.args.get , or requist.form.get
+        title = req['title']
+        done = req['done']
+                     
         update_task(app.mongo, 'tasks', title, done, id)
 
-        return jsonify(message='Success', status='201'), 201
+        return jsonify(message='Success', status='201', title=title, done=done,id=id), 201
 
