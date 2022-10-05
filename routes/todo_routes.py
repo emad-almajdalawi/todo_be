@@ -82,21 +82,6 @@ def todo_routes(app):
         return jsonify(message='Success', status='201', data=serialized), 201,
 
 
-
-    @app.route('/task/delete/<id>', methods = ['POST'])
-    def todo_delete_task(id):
-        """
-        Calls the CRUD methods to delete a task
-
-        Args:
-            - id: the id of the task to show its details
-        """
-        delete_task(app.mongo, 'tasks', id)
-
-        return jsonify(message='Success', status='202', id=id), 202
-
-
-
     @app.route('/task/update/<id>', methods = ['POST'])
     def todo_update_task(id):
         """
@@ -107,9 +92,26 @@ def todo_routes(app):
         """
         req = request.get_json() #or requeist.args.get , or requist.form.get
         title = req['title']
-        done = req['done']
                      
-        update_task(app.mongo, 'tasks', title, done, id)
+        update_task(app.mongo, 'tasks', title, id)
 
-        return jsonify(message='Success', status='201', title=title, done=done,id=id), 201
+        updated_doc = list(get_data(app.mongo, 'tasks',id))[0]
+        serialised = serialize(updated_doc)
 
+        return jsonify(message = 'Success', status = '201', data = serialised), 201
+
+
+    @app.route('/task/delete/<id>', methods = ['POST'])
+    def todo_delete_task(id):
+        """
+        Calls the CRUD methods to delete a task
+
+        Args:
+            - id: the id of the task to show its details
+        """
+        deleted_doc = list(get_data(app.mongo, 'tasks',id))[0]
+        serialised = serialize(deleted_doc)
+
+        delete_task(app.mongo, 'tasks', id)
+
+        return jsonify(message='Success', status='202', data= serialised), 202
