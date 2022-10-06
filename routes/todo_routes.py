@@ -1,7 +1,7 @@
 import json
 from flask import jsonify, request
 from bson import json_util
-from services.mogo_crud import delete_done, get_data, post_task, delete_task, task_done, update_task, delete_all, all_tasks_done
+from services.mogo_crud import delete_done, get_data, post_task, delete_task, task_done, update_task, delete_all, all_tasks_done, delete_many
 
 
 def serialize(data):
@@ -169,3 +169,14 @@ def todo_routes(app):
 
         return jsonify(message='Success', status='202'), 202
 
+
+    @app.route('/task/deletemany', methods = ['POST'])
+    def todo_delete_many():
+        """
+        Calls the CRUD methods to delete many tasks
+        """
+        req = request.get_json()
+        ids_list = req['allIds']
+        delete_many(app.mongo, 'tasks', ids_list)
+
+        return jsonify(message='Success', status='202'), 202

@@ -134,3 +134,24 @@ def delete_done(mongo, collection):
         str(collection)
     
     mongo.db[collection].delete_many({'done': True})
+
+
+def delete_many(mongo, collection, ids_list):
+    """
+    Delete all many tsks based on id
+
+        Args:
+    - mongo (Object): pyMongo object of the database
+    - collection (String): collection name
+    - isd_list: a list of string ids for tasks to be deleted
+    """
+
+    if type(collection) != str:
+        str(collection)
+
+    objectids_list = []
+
+    for id in ids_list:
+        objectids_list.append(ObjectId(id))
+        
+    mongo.db[collection].delete_many({'_id': {'$in': objectids_list}})
